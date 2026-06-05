@@ -11,10 +11,39 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .qr-box {
+      position: fixed; top: 14px; right: 14px; z-index: 999;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(16px);
+      border-radius: 14px; padding: 10px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+      transition: transform .2s;
+      cursor: pointer;
+    }
+    .qr-box:hover { transform: scale(1.05); }
+    .qr-box canvas, .qr-box img { border-radius: 8px; display: block; }
+    .qr-label {
+      font-size: .62rem; color: rgba(255,255,255,.5);
+      text-align: center; max-width: 90px;
+      line-height: 1.3; word-break: break-all;
+    }
+    @media (max-width: 500px) {
+      .qr-box { top: auto; bottom: 80px; right: 10px; }
+    }
+  </style>
 </head>
 <body>
 
 <canvas id="bg-canvas"></canvas>
+
+<!-- QR Code -->
+<div class="qr-box" onclick="window.open('https://zentogio.github.io/hand-sensor/','_blank')" title="Open site">
+  <div id="qrcode"></div>
+  <div class="qr-label">Scan to open<br/>on mobile</div>
+</div>
 
 <div class="wrapper">
 
@@ -109,6 +138,18 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+
+<!-- QR Code library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+  new QRCode(document.getElementById('qrcode'), {
+    text:   'https://zentogio.github.io/hand-sensor/',
+    width:  90, height: 90,
+    colorDark:  '#ffffff',
+    colorLight: 'rgba(0,0,0,0)',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+</script>
 
 <script src="js/config.js"></script>
 <script src="js/three-bg.js"></script>
