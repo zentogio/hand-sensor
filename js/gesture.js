@@ -15,6 +15,16 @@ class GestureDetector {
     this.camera         = null;
     this.hands          = null;
     this.isMobile       = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // AR hooks — ตั้งค่าจาก app.js หลัง init()
+    this.onFrame     = null;   // (lm, gesture, isPinching) => void
+    this.drawOverlay = null;   // (ctx, W, H) => void
+  }
+
+  _isPinching(lm) {
+    const dx = lm[4].x - lm[8].x;
+    const dy = lm[4].y - lm[8].y;
+    return Math.sqrt(dx*dx + dy*dy) < 0.06;
   }
 
   _fingerStates(lm) {
@@ -109,13 +119,22 @@ class GestureDetector {
         const lm = results.multiHandLandmarks[0].map(p => ({
           x: 1 - p.x, y: p.y, z: p.z
         }));
-        const raw    = this._classify(lm);
-        const stable = this._stableGesture(raw);
+        const raw        = this._classify(lm);
+        const stable     = this._stableGesture(raw);
+        const isPinching = this._isPinching(lm);
+
         if (stable !== this.currentGesture) {
           this.currentGesture = stable;
           this.onGesture(stable);
         }
+
+        // ส่งข้อมูล frame ให้ AR manager ทุก frame
+        if (this.onFrame) this.onFrame(lm, stable, isPinching);
+
         this._drawHand(lm, stable);
+
+        // วาด AR overlay ทับ
+        if (this.drawOverlay) this.drawOverlay(ctx, c.width, c.height);
       } else {
         this._stableGesture('none');
         if (this.currentGesture !== 'none') {

@@ -4,6 +4,7 @@
 
 const db       = new GestureDB();
 const bg       = new ParticleBackground('bg-canvas');
+const arManager = new ARImageManager();
 let detector   = null;
 let pendingFile = null;
 let lastGesture = 'none';
@@ -27,6 +28,7 @@ const queueBadge   = $('queue-badge');
 const camToggle    = $('cam-toggle');
 const feedList     = $('feed-list');
 const toast        = $('toast');
+const shelfItems   = $('ar-shelf-items');
 
 // ── Toast ─────────────────────────────────────
 function showToast(msg, type = 'info') {
@@ -150,7 +152,70 @@ function displayReceived(img) {
   };
   receivedMeta.textContent =
     `From ${img.userName || 'Unknown'} · ${timeAgo(img.uploadedAt?.toDate?.() || new Date())}`;
+
+  // ── AR: ใส่รูปไว้ที่มือ ──────────────────────
+  if (detector) {
+    arManager.receive(img.imageUrl);
+    showToast('✌️ Pinch to grab the image!', 'info');
+  }
 }
+
+// ── Cam Shelf toggle ─────────────────────────
+const camShelfBtn   = $('cam-shelf-btn');
+const camShelfPanel = $('cam-shelf-panel');
+const camShelfClose = $('cam-shelf-close');
+const shelfBadge    = $('shelf-badge');
+
+camShelfBtn.addEventListener('click', () => {
+  camShelfPanel.classList.toggle('open');
+  camShelfBtn.classList.toggle('has-items');
+});
+camShelfClose.addEventListener('click', () => {
+  camShelfPanel.classList.remove('open');
+});
+
+function updateShelfBadge(count) {
+  if (count > 0) {
+    shelfBadge.textContent = count;
+    shelfBadge.style.display = 'flex';
+    camShelfBtn.classList.add('has-items');
+  } else {
+    shelfBadge.style.display = 'none';
+    camShelfBtn.classList.remove('has-items');
+  }
+}
+
+// ── AR Shelf render ───────────────────────────
+function renderShelf(images) {
+  updateShelfBadge(images.length);
+  if (!images.length) {
+    shelfItems.innerHTML = '<span class="cam-shelf-empty">No saved images yet<br/>✌️ Pinch → drag to shelf</span>';
+    return;
+  }
+  shelfItems.innerHTML = images.map((img, i) => `
+    <div class="ar-shelf-thumb new-in" style="animation-delay:${i*0.05}s"
+         onclick="downloadShelfImage('${img.src}', ${img.time})">
+      <img src="${img.src}" alt="saved"/>
+      <div class="dl-btn">↓ SAVE</div>
+    </div>
+  `).join('');
+}
+
+function downloadShelfImage(src, time) {
+  const a = document.createElement('a');
+  a.href     = src;
+  a.download = `gesture-${time}.jpg`;
+  a.click();
+}
+
+// ── AR Manager callbacks ──────────────────────
+arManager.onSaved = (images) => {
+  renderShelf(images);
+  showToast('📁 Saved to shelf!', 'success');
+};
+arManager.onDeleted = () => {
+  showToast('🗑️ Image deleted', 'error');
+};
 
 // ── Activity feed ─────────────────────────────
 function renderFeed(items) {
@@ -184,6 +249,15 @@ camToggle.addEventListener('click', async () => {
       camToggle.textContent = '⏹ Disable Camera';
       camToggle.classList.add('active');
       showToast('Camera started ✅', 'success');
+
+      // ── เชื่อม AR Manager กับ detector ──────────
+      detector.onFrame = (lm, gesture, isPinching) => {
+        arManager.update(lm, gesture, isPinching,
+          detector.canvas.width, detector.canvas.height);
+      };
+      detector.drawOverlay = (ctx, W, H) => {
+        arManager.draw(ctx, W, H);
+      };
     } catch (e) {
       showToast('Camera error: ' + e.message, 'error');
       detector = null;

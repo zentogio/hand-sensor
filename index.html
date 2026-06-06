@@ -87,11 +87,34 @@
           <span id="gesture-icon">👋</span>
           <span id="gesture-label" style="color:var(--muted)">Show your hand</span>
         </div>
+
+        <!-- Shelf icon — inside camera -->
+        <div class="cam-shelf-btn" id="cam-shelf-btn" title="Shelf">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="5" rx="1"/>
+            <rect x="2" y="10" width="20" height="5" rx="1"/>
+            <rect x="2" y="17" width="20" height="5" rx="1"/>
+          </svg>
+          <span class="shelf-badge" id="shelf-badge" style="display:none">0</span>
+        </div>
+
+        <!-- Shelf panel — slides up inside camera -->
+        <div class="cam-shelf-panel" id="cam-shelf-panel">
+          <div class="cam-shelf-header">
+            <span class="cam-shelf-title">📁 SHELF</span>
+            <button class="cam-shelf-close" id="cam-shelf-close">✕</button>
+          </div>
+          <div class="cam-shelf-items" id="ar-shelf-items">
+            <span class="cam-shelf-empty">No saved images yet<br/>✌️ Pinch → drag to shelf</span>
+          </div>
+        </div>
       </div>
       <button id="cam-toggle">📷 Enable Camera</button>
+
       <div class="gesture-guide">
         <strong>✊ Fist</strong> — Upload selected image<br/>
-        <strong>🖐 Open Palm</strong> — Receive next image
+        <strong>🖐 Open Palm</strong> — Receive next image<br/>
+        <strong>✌️ Pinch</strong> — Grab image · drag to shelf zone
       </div>
     </div>
 
@@ -172,6 +195,7 @@
   });
 </script>
 
+<script src="js/ar-image.js"></script>
 <script src="js/config.js"></script>
 <script src="js/three-bg.js"></script>
 <script src="js/gesture.js"></script>

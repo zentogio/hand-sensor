@@ -523,6 +523,126 @@ header h1 span { color: var(--yellow); }
   line-height: 1.5; letter-spacing: 0.1em; text-transform: uppercase;
 }
 
+/* ── Shelf icon button (inside camera) ───── */
+.cam-shelf-btn {
+  position: absolute;
+  top: 10px; right: 10px;
+  z-index: 4;
+  width: 36px; height: 36px;
+  background: rgba(4,4,7,0.75);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color .2s, border-color .2s, background .2s;
+}
+.cam-shelf-btn:hover {
+  color: var(--yellow);
+  border-color: var(--yellow);
+  background: rgba(233,255,84,0.08);
+}
+.cam-shelf-btn.has-items { color: var(--yellow); border-color: rgba(233,255,84,0.4); }
+
+.shelf-badge {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: var(--yellow);
+  color: #040407;
+  font-size: .55rem; font-weight: 700;
+  width: 16px; height: 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* ── Shelf panel (inside camera, slides up) ─ */
+.cam-shelf-panel {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  z-index: 5;
+  background: rgba(4,4,7,0.92);
+  border-top: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  transform: translateY(100%);
+  transition: transform .35s cubic-bezier(.4,0,.2,1);
+  max-height: 55%;
+  display: flex; flex-direction: column;
+}
+.cam-shelf-panel.open { transform: translateY(0); }
+
+.cam-shelf-header {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.cam-shelf-title {
+  font-size: .65rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  color: var(--yellow);
+}
+.cam-shelf-close {
+  background: none; border: none;
+  color: var(--muted); font-size: .85rem;
+  cursor: pointer; padding: 2px 6px;
+  transition: color .2s;
+}
+.cam-shelf-close:hover { color: var(--text); }
+
+.cam-shelf-items {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  overflow-y: auto;
+  align-content: flex-start;
+}
+
+.cam-shelf-empty {
+  font-size: .65rem; color: var(--muted);
+  letter-spacing: .08em; line-height: 1.8;
+  text-align: center; width: 100%;
+  padding: 10px 0;
+}
+
+/* ── Shelf thumbnails ─────────────────────── */
+.ar-shelf-thumb {
+  position: relative;
+  width: 60px; height: 46px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  transition: border-color .2s, transform .2s;
+  flex-shrink: 0;
+}
+.ar-shelf-thumb:hover {
+  border-color: var(--yellow);
+  transform: scale(1.1);
+}
+.ar-shelf-thumb img {
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.ar-shelf-thumb .dl-btn {
+  position: absolute; inset: 0;
+  background: rgba(4,4,7,.8);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .2s;
+  font-size: .58rem; color: var(--yellow);
+  letter-spacing: .06em; font-weight: 600;
+}
+.ar-shelf-thumb:hover .dl-btn { opacity: 1; }
+
+@keyframes shelf-pop {
+  from { transform: scale(0) rotate(-10deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg);   opacity: 1; }
+}
+.ar-shelf-thumb.new-in {
+  animation: shelf-pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
